@@ -84,11 +84,25 @@ export interface RunDetail {
   findings: Finding[]
   approvals: Approval[]
   summary: string
+  /**
+   * Structured AI summary from the summarizer agent. `summary` keeps the
+   * plain-text narrative; this holds the bullet sections shown on the AI
+   * Review Summary page. Absent for runs summarized before the field existed.
+   */
+  summary_detail: SummaryDetail | null
   publication: Record<string, unknown> | null
   error: string | null
   created_at: number
   updated_at: number
   hitl_pending: number
+}
+
+/** Structured output of the summarizer agent (POST-run synthesis). */
+export interface SummaryDetail {
+  summary: string
+  changes: string[]
+  impact: string[]
+  recommendations: string[]
 }
 
 /** SSE event payload from GET /api/v1/runs/{id}/events. */

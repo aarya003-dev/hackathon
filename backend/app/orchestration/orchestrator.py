@@ -132,7 +132,9 @@ class ReviewOrchestrator:
 
             # 4. Synthesize the summary.
             self._node(run, AgentKind.summarizer, NodeStatus.running)
-            run.summary = await self.summarizer.run(self._ctx(run))
+            summary_detail = await self.summarizer.run(self._ctx(run))
+            run.summary = summary_detail.get("summary", "")
+            run.summary_detail = summary_detail
             self._node(run, AgentKind.summarizer, NodeStatus.success)
 
             # 5. Route findings to the repository (dry-run in the demo).

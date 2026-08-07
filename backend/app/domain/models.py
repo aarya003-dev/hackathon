@@ -77,6 +77,10 @@ class ReviewRun(BaseModel):
     findings: list[Finding] = []
     approvals: list[HitlApproval] = []
     summary: str = ""
+    # Structured AI summary (summary/changes/impact/recommendations) from the
+    # summarizer agent; ``summary`` keeps the plain-text narrative for clients
+    # that only need a string. None for runs summarized before this field.
+    summary_detail: dict[str, Any] | None = None
     publication: dict[str, Any] | None = None
     error: str | None = None
     created_at: float = Field(default_factory=time.time)

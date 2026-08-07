@@ -205,7 +205,18 @@ class DemoGateway:
                 "summary": (
                     f"Reviewed {len(files)} changed file(s). "
                     f"The security agent reported {security_count} issue(s)."
-                )
+                ),
+                "changes": (
+                    [f"Changed {file}" for file in files]
+                    if files
+                    else ["No file changes detected"]
+                ),
+                "impact": (
+                    [f"{security_count} security issue(s) to address"]
+                    if security_count
+                    else ["No security issues found"]
+                ),
+                "recommendations": [],
             }
         if kind == "security":
             return {"findings": _security_findings(diff, files)}

@@ -9,6 +9,7 @@ import {
   GitPullRequest,
   Info,
   Loader2,
+  ScrollText,
   Zap,
   type LucideIcon,
 } from 'lucide-react'
@@ -53,6 +54,8 @@ export default function Sidebar() {
   const live = runs.some((run) =>
     ['queued', 'running', 'waiting_hitl'].includes(run.status),
   )
+  const onRunView = location.pathname.startsWith('/runs/')
+  const onRunSummary = onRunView && location.pathname.endsWith('/summary')
 
   const nav: NavItem[] = [
     {
@@ -74,8 +77,17 @@ export default function Sidebar() {
       label: 'PR View',
       icon: FileDiff,
       to: latestRun ? `/runs/${latestRun.id}` : '/',
-      active: location.pathname.startsWith('/runs/'),
+      active: onRunView && !onRunSummary,
       subtitle: latestRun ? `latest · ${latestRun.commit}` : undefined,
+      disabled: !latestRun,
+    },
+    {
+      id: 'summary',
+      label: 'Summary',
+      icon: ScrollText,
+      to: latestRun ? `/runs/${latestRun.id}/summary` : '/',
+      active: onRunSummary,
+      subtitle: latestRun ? 'AI review summary' : undefined,
       disabled: !latestRun,
     },
     {

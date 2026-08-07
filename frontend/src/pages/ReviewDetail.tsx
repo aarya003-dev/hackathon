@@ -144,9 +144,17 @@ export default function ReviewDetail() {
 
       {/* Summary */}
       <div className="rounded-xl border border-edge bg-panel p-4">
-        <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          <Sparkles size={13} /> Summary
-        </h3>
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <Sparkles size={13} /> Summary
+          </h3>
+          <Link
+            to={`/runs/${run.id}/summary`}
+            className="inline-flex items-center gap-1 rounded-lg border border-accent/40 bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent hover:bg-accent/20"
+          >
+            <Sparkles size={12} /> AI Summary
+          </Link>
+        </div>
         {run.summary ? (
           <p className="mt-2 whitespace-pre-wrap text-sm text-slate-200">{run.summary}</p>
         ) : run.status === 'succeeded' ? (

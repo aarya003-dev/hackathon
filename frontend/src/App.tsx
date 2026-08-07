@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Pipeline from './pages/Pipeline'
 import MetricsPage from './pages/MetricsPage'
 import ReviewDetail from './pages/ReviewDetail'
+import ReviewSummary from './pages/ReviewSummary'
 import Agents from './pages/Agents'
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
             <Route path="/" element={<Pipeline />} />
             <Route path="/metrics" element={<MetricsPage />} />
             <Route path="/runs/:runId" element={<ReviewDetail />} />
+            <Route path="/runs/:runId/summary" element={<ReviewSummary />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
