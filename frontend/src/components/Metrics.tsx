@@ -40,7 +40,13 @@ export function DashboardMetrics({ runs }: { runs: RunSummary[] }) {
 }
 
 /** Severity distribution for a single run. */
-export function FindingMetrics({ findings }: { findings: Finding[] }) {
+export function FindingMetrics({
+  findings,
+  runStatus,
+}: {
+  findings: Finding[]
+  runStatus?: string
+}) {
   const counts = SEVERITIES.map((severity) => ({
     severity,
     count: findings.filter((finding) => finding.severity === severity).length,
@@ -53,7 +59,9 @@ export function FindingMetrics({ findings }: { findings: Finding[] }) {
       <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
         Findings by severity
       </h3>
-      {total === 0 ? (
+      {total === 0 && runStatus === 'failed' ? (
+        <p className="mt-2 text-sm text-rose-500">Review failed</p>
+      ) : total === 0 ? (
         <p className="mt-2 text-sm text-slate-400">No findings.</p>
       ) : (
         <div className="mt-2 space-y-2">

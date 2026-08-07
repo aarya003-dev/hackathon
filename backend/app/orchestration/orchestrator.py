@@ -94,15 +94,33 @@ class ReviewOrchestrator:
             rag_context = self._retrieve_rag_context(run)
 
             # 2. Core review and security run in parallel.
+            #    return_exceptions=True so a failure in one agent does not
+            #    cancel the other — partial results are still useful.
             self._node(run, AgentKind.core, NodeStatus.running)
             self._node(run, AgentKind.security, NodeStatus.running)
-            core_findings, security_findings = await asyncio.gather(
+            core_result, security_result = await asyncio.gather(
                 self.core.run(self._ctx(run), core_files, rag_context),
                 self.security.run(self._ctx(run), security_files, rag_context),
+                return_exceptions=True,
             )
+            core_findings = core_result if isinstance(core_result, list) else []
+            security_findings = (
+                security_result if isinstance(security_result, list) else []
+            )
+            errors: list[str] = []
+            if isinstance(core_result, BaseException):
+                errors.append(f"core review: {core_result}")
+                self._node(run, AgentKind.core, NodeStatus.failed)
+            else:
+                self._node(run, AgentKind.core, NodeStatus.success)
+            if isinstance(security_result, BaseException):
+                errors.append(f"security: {security_result}")
+                self._node(run, AgentKind.security, NodeStatus.failed)
+            else:
+                self._node(run, AgentKind.security, NodeStatus.success)
+            if errors:
+                run.error = "; ".join(errors)
             run.findings = core_findings + security_findings
-            self._node(run, AgentKind.core, NodeStatus.success)
-            self._node(run, AgentKind.security, NodeStatus.success)
 
             # 3. HITL gate: pause if any finding needs a human decision.
             pending = [finding for finding in run.findings if finding.requires_hitl]

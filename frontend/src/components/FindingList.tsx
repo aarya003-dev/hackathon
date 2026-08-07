@@ -1,4 +1,4 @@
-import { CheckCircle2, ShieldAlert, TriangleAlert } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ShieldAlert, TriangleAlert } from 'lucide-react'
 import type { Finding, Severity } from '../types'
 import { SEVERITY_ORDER, SEVERITY_STYLE } from '../lib/status'
 
@@ -16,8 +16,22 @@ const AGENT_LABEL: Record<Finding['agent'], string> = {
   summarizer: 'Summarizer',
 }
 
-export default function FindingList({ findings }: { findings: Finding[] }) {
+export default function FindingList({
+  findings,
+  runStatus,
+}: {
+  findings: Finding[]
+  runStatus?: string
+}) {
   if (findings.length === 0) {
+    if (runStatus === 'failed') {
+      return (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+          <AlertCircle size={20} className="mx-auto mb-2" />
+          Review failed — agent errors prevented findings from being collected.
+        </div>
+      )
+    }
     return (
       <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-6 text-center text-sm text-emerald-800">
         <CheckCircle2 size={20} className="mx-auto mb-2" />

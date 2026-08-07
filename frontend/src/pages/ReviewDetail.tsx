@@ -187,8 +187,8 @@ export default function ReviewDetail() {
 
       {/* Findings + metrics */}
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        <FindingMetrics findings={run.findings} />
-        <FindingList findings={run.findings} />
+        <FindingMetrics findings={run.findings} runStatus={run.status} />
+        <FindingList findings={run.findings} runStatus={run.status} />
       </div>
 
       {/* Diff */}

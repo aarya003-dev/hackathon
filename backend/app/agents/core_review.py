@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from ..domain.models import AgentKind, Finding, Severity
 from ..orchestration.prompts import build_core_messages
-from .base import AgentContext, BaseAgent
+from .base import AgentContext, BaseAgent, coerce_confidence
 
 
 class CoreReviewAgent(BaseAgent):
@@ -36,7 +36,7 @@ class CoreReviewAgent(BaseAgent):
                     line_end=raw.get("line_end"),
                     message=raw.get("message", ""),
                     suggestion=raw.get("suggestion", ""),
-                    confidence=float(raw.get("confidence", 1.0)),
+                    confidence=coerce_confidence(raw.get("confidence", 1.0)),
                 )
             )
         return findings

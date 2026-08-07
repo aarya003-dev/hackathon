@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from ..domain.models import AgentKind, Finding, Severity
 from ..orchestration.prompts import build_security_messages
-from .base import AgentContext, BaseAgent
+from .base import AgentContext, BaseAgent, coerce_confidence
 
 _HITL_CONFIDENCE = 0.8
 
@@ -32,7 +32,7 @@ class SecurityAgent(BaseAgent):
         findings: list[Finding] = []
         for raw in data.get("findings", []):
             severity = Severity(raw.get("severity", "warning"))
-            confidence = float(raw.get("confidence", 1.0))
+            confidence = coerce_confidence(raw.get("confidence", 1.0))
             requires_hitl = severity == Severity.critical or (
                 severity in (Severity.error, Severity.critical)
                 and confidence < _HITL_CONFIDENCE
