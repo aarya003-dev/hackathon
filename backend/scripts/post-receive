@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# post-receive hook for a LOCAL bare repo — no deployment, no port forwarding.
+#
+# Setup:
+#   git init --bare /srv/review-hub.git
+#   cp backend/scripts/post-receive /srv/review-hub.git/hooks/post-receive
+#   chmod +x /srv/review-hub.git/hooks/post-receive
+#   cd your-repo && git remote add review /srv/review-hub.git
+#   # every push now POSTs a normalized event to the local backend
+#
+# Configuration via environment (export before pushing, or hard-code below):
+#   INGEST_URL     default http://localhost:8000/api/v1/ingest/git
+#   INGEST_SECRET  must match INGEST_SECRET in backend/.env
+set -euo pipefail
+
+INGEST_URL="${INGEST_URL:-http://localhost:8000/api/v1/ingest/git}"
+INGEST_SECRET="${INGEST_SECRET:-dev-secret}"
+REPO_DIR="$(pwd)"
+
+# stdin: lines of "<old> <new> <ref>" for every pushed reference.
+while read -r oldrev newrev ref; do
+  [ -n "$newrev" ] || continue              # branch deletion
+  base="${newrev}^"                          # parent of the new head
+
+  body="$(python3 - "$base" "$newrev" "$REPO_DIR" <<'PYEOF'
+import json
+import subprocess
+import sys
+
+base, newrev, repo = sys.argv[1], sys.argv[2], sys.argv[3]
+
+
+def git(*args: str) -> str:
+    return subprocess.run(
+        ["git", "-C", repo, *args],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+
+
+diff = git("diff", f"{base}..{newrev}", "--no-color")
+files = [f for f in git("diff", "--name-only", f"{base}..{newrev}").splitlines() if f]
+message = git("log", "-1", "--format=%s", newrev).strip()
+payload = {
+    "event": "push",
+    "provider": "local_git",
+    "repository": {
+        "name": repo.rstrip("/").split("/")[-1],
+        "path": repo,
+        "clone_url": f"file://{repo}",
+    },
+    "commit": {
+        "sha": newrev,
+        "base_sha": base,
+        "message": message,
+        "files": files,
+        "diff": diff,
+    },
+}
+print(json.dumps(payload))
+PYEOF
+)"
+
+  curl -sS -X POST "$INGEST_URL" \
+    -H "Content-Type: application/json" \
+    -H "X-Ingest-Secret: $INGEST_SECRET" \
+    -d "$body" \
+    || echo "ingest failed for $newrev" >&2
+done

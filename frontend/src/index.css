@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* React Flow fills its parent; the parent supplies the height. */
+.react-flow {
+  @apply rounded-xl;
+}
+
+.react-flow__node {
+  font-family: inherit;
+}
+
+/* Subtle scrollbars for the diff viewer. */
+.diff-scroll {
+  scrollbar-width: thin;
+}

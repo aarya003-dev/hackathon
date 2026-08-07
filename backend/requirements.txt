@@ -1,0 +1,13 @@
+# Runtime
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+httpx
+google-genai
+
+# Testing / quality
+pytest
+pytest-asyncio
+ruff
+mypy
