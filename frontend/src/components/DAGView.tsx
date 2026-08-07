@@ -9,6 +9,7 @@ import {
   type Node,
   type NodeProps,
 } from '@xyflow/react'
+import { Code2, GitBranch, ShieldAlert, Sparkles, type LucideIcon } from 'lucide-react'
 import '@xyflow/react/dist/style.css'
 import type { AgentId, NodeStatus } from '../types'
 import { NODE_STATUS_STYLE } from '../lib/status'
@@ -20,13 +21,20 @@ const AGENT_LABEL: Record<AgentId, string> = {
   summarizer: 'Summarizer',
 }
 
+const AGENT_ICON: Record<AgentId, LucideIcon> = {
+  triage: GitBranch,
+  core_review: Code2,
+  security: ShieldAlert,
+  summarizer: Sparkles,
+}
+
 const AGENT_ORDER: AgentId[] = ['triage', 'core_review', 'security', 'summarizer']
 
 const POSITIONS: Record<AgentId, { x: number; y: number }> = {
   triage: { x: 0, y: 130 },
-  core_review: { x: 280, y: 0 },
-  security: { x: 280, y: 260 },
-  summarizer: { x: 560, y: 130 },
+  core_review: { x: 300, y: 0 },
+  security: { x: 300, y: 260 },
+  summarizer: { x: 600, y: 130 },
 }
 
 const EDGES: Edge[] = [
@@ -45,19 +53,25 @@ export type AgentFlowNode = Node<AgentNodeData, 'agent'>
 
 function AgentNode({ data }: NodeProps<AgentFlowNode>) {
   const style = NODE_STATUS_STYLE[data.status]
+  const Icon = AGENT_ICON[data.agent]
   return (
-    <div
-      className="flex items-center gap-2 rounded-xl border-2 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm"
-      style={{ borderColor: style.border, background: style.background }}
-    >
-      <Handle type="target" position={Position.Left} className="!bg-slate-400" />
-      <span
-        className={`h-2 w-2 shrink-0 rounded-full ${style.pulse ? 'animate-pulse' : ''}`}
-        style={{ background: style.dot }}
-      />
-      <span>{AGENT_LABEL[data.agent]}</span>
-      <span className="ml-2 text-[10px] uppercase tracking-wide text-slate-400">{data.status}</span>
-      <Handle type="source" position={Position.Right} className="!bg-slate-400" />
+    <div className="flex flex-col items-center gap-2">
+      <Handle type="target" position={Position.Left} className="!h-2 !w-2 !border-0 !bg-slate-600" />
+      <div
+        className="flex h-16 w-16 items-center justify-center rounded-full border-2 transition-shadow"
+        style={{
+          borderColor: style.border,
+          background: style.background,
+          boxShadow: style.pulse ? `0 0 22px ${style.border}66` : undefined,
+        }}
+      >
+        <Icon size={26} style={{ color: style.dot }} className={style.pulse ? 'animate-pulse' : ''} />
+      </div>
+      <div className="text-center">
+        <div className="text-sm font-medium text-slate-100">{AGENT_LABEL[data.agent]}</div>
+        <div className="text-[10px] uppercase tracking-wider text-slate-500">{data.status}</div>
+      </div>
+      <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-0 !bg-slate-600" />
     </div>
   )
 }
@@ -78,7 +92,7 @@ export default function DAGView({ nodes }: { nodes: Record<AgentId, NodeStatus> 
   )
 
   return (
-    <div className="h-[360px] w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="h-[380px] w-full overflow-hidden rounded-xl border border-edge bg-panel">
       <ReactFlow
         nodes={flowNodes}
         edges={EDGES}
@@ -90,7 +104,7 @@ export default function DAGView({ nodes }: { nodes: Record<AgentId, NodeStatus> 
         elementsSelectable={false}
         proOptions={{ hideAttribution: true }}
       >
-        <Background gap={22} color="#e2e8f0" />
+        <Background gap={26} color="#1f2430" />
         <Controls showInteractive={false} />
       </ReactFlow>
     </div>

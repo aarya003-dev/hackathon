@@ -11,11 +11,11 @@ export const RUN_STATUS_LABEL: Record<RunStatus, string> = {
 
 /** Tailwind classes for run status badges. */
 export const RUN_STATUS_STYLE: Record<RunStatus, string> = {
-  queued: 'border-slate-300 bg-slate-100 text-slate-700',
-  running: 'border-blue-300 bg-blue-100 text-blue-800',
-  waiting_hitl: 'border-amber-300 bg-amber-100 text-amber-800',
-  succeeded: 'border-emerald-300 bg-emerald-100 text-emerald-800',
-  failed: 'border-rose-300 bg-rose-100 text-rose-800',
+  queued: 'border-slate-600/60 bg-slate-800/60 text-slate-300',
+  running: 'border-cyan-500/50 bg-cyan-500/10 text-cyan-300',
+  waiting_hitl: 'border-amber-500/50 bg-amber-500/10 text-amber-300',
+  succeeded: 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300',
+  failed: 'border-rose-500/50 bg-rose-500/10 text-rose-300',
 }
 
 /** Visual mapping for DAG agent nodes. */
@@ -27,11 +27,28 @@ export interface NodeStyle {
 }
 
 export const NODE_STATUS_STYLE: Record<NodeStatus, NodeStyle> = {
-  idle: { border: '#cbd5e1', background: '#f8fafc', dot: '#94a3b8' },
-  running: { border: '#3b82f6', background: '#eff6ff', dot: '#3b82f6', pulse: true },
-  success: { border: '#22c55e', background: '#f0fdf4', dot: '#22c55e' },
-  failed: { border: '#ef4444', background: '#fef2f2', dot: '#ef4444' },
-  paused: { border: '#f59e0b', background: '#fffbeb', dot: '#f59e0b' },
+  idle: { border: '#2c3345', background: '#14171f', dot: '#4b5563' },
+  running: {
+    border: '#22d3ee',
+    background: 'rgba(34, 211, 238, 0.12)',
+    dot: '#22d3ee',
+    pulse: true,
+  },
+  success: {
+    border: '#10b981',
+    background: 'rgba(16, 185, 129, 0.12)',
+    dot: '#10b981',
+  },
+  failed: {
+    border: '#f43f5e',
+    background: 'rgba(244, 63, 94, 0.12)',
+    dot: '#f43f5e',
+  },
+  paused: {
+    border: '#f59e0b',
+    background: 'rgba(245, 158, 11, 0.12)',
+    dot: '#f59e0b',
+  },
 }
 
 /** Severity -> sort rank (lower = more severe). */
@@ -44,10 +61,19 @@ export const SEVERITY_ORDER: Record<Severity, number> = {
 
 /** Tailwind classes for severity badges. */
 export const SEVERITY_STYLE: Record<Severity, string> = {
-  critical: 'bg-rose-100 text-rose-800',
-  error: 'bg-orange-100 text-orange-800',
-  warning: 'bg-amber-100 text-amber-800',
-  info: 'bg-slate-100 text-slate-700',
+  critical: 'bg-rose-500/15 text-rose-300',
+  error: 'bg-orange-500/15 text-orange-300',
+  warning: 'bg-amber-500/15 text-amber-300',
+  info: 'bg-slate-600/50 text-slate-300',
+}
+
+/** Colored dot for run-status badges on dark surfaces. */
+export const STATUS_DOT: Record<RunStatus, string> = {
+  queued: 'bg-slate-400',
+  running: 'bg-cyan-400',
+  waiting_hitl: 'bg-amber-400',
+  succeeded: 'bg-emerald-400',
+  failed: 'bg-rose-400',
 }
 
 /** Solid dot colors for inline markers (diff lines). */

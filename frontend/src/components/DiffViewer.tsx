@@ -46,10 +46,10 @@ function DiffFileBlock({ file, findings }: { file: DiffFile; findings: Finding[]
   }, [fileFindings])
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-3 py-2">
-        <div className="flex items-center gap-2 font-mono text-sm font-medium text-slate-700">
-          <FileCode size={15} className="text-slate-400" />
+    <div className="overflow-hidden rounded-xl border border-edge bg-panel">
+      <div className="flex items-center justify-between border-b border-edge bg-panel-2 px-3 py-2">
+        <div className="flex items-center gap-2 font-mono text-sm font-medium text-slate-200">
+          <FileCode size={15} className="text-slate-500" />
           {normalizePath(file.newPath) || file.newPath}
         </div>
         {fileFindings.length > 0 && (
@@ -81,17 +81,17 @@ function LineRow({ line, findings }: { line: DiffLine; findings: Finding[] | und
     line.type === 'add' ? '+' : line.type === 'del' ? '-' : line.type === 'meta' ? '' : ' '
   const classes =
     line.type === 'meta'
-      ? 'bg-slate-50 text-slate-400'
+      ? 'bg-panel-2 text-slate-500'
       : line.type === 'add'
-        ? 'bg-emerald-50/70 text-emerald-900'
+        ? 'bg-emerald-500/10 text-emerald-200'
         : line.type === 'del'
-          ? 'bg-rose-50/70 text-rose-900'
-          : 'text-slate-600'
+          ? 'bg-rose-500/10 text-rose-200'
+          : 'text-slate-300'
 
   return (
     <tr className={classes}>
-      <td className="w-10 select-none pr-2 text-right text-slate-400">{gutter}</td>
-      <td className="w-8 select-none text-center text-slate-400">{marker}</td>
+      <td className="w-10 select-none pr-2 text-right text-slate-500">{gutter}</td>
+      <td className="w-8 select-none text-center text-slate-500">{marker}</td>
       <td className="px-3">
         {line.type === 'add' && findings && findings.length > 0 ? (
           <div className="flex items-start gap-2">

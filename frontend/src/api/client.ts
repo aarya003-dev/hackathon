@@ -1,4 +1,10 @@
-import type { DecisionResult, RunDetail, RunSummary } from '../types'
+import type {
+  AgentsResponse,
+  AnalyzeResult,
+  DecisionResult,
+  RunDetail,
+  RunSummary,
+} from '../types'
 
 /**
  * Typed REST client for the backend. In dev, Vite proxies `/api` to the
@@ -34,6 +40,19 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+    }),
+  /** Live agent health + gateway config for the Agents page. */
+  getAgents: () => request<AgentsResponse>('/agents'),
+  /**
+   * On-demand review of the latest commit in the watched repo. Requires the
+   * shared dev ingest secret (VITE_INGEST_SECRET), same value the watcher uses.
+   */
+  analyze: () =>
+    request<AnalyzeResult>('/ingest/analyze', {
+      method: 'POST',
+      headers: {
+        'X-Ingest-Secret': import.meta.env.VITE_INGEST_SECRET ?? 'dev-secret',
+      },
     }),
   /** SSE stream URL for a run (consumed via EventSource). */
   eventsUrl: (runId: string) => `${BASE}/runs/${runId}/events`,

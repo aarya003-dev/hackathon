@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+
 from app.integrations.local_git import (
     GitCommandError,
     build_push_event,

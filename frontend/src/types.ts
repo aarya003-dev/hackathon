@@ -104,3 +104,42 @@ export interface DecisionResult {
   status: ApprovalStatus
   run_id: string
 }
+
+/** Per-agent health aggregate from GET /api/v1/agents. */
+export interface AgentStats {
+  id: AgentId
+  name: string
+  role: string
+  backend: string
+  model: string
+  latest_status: NodeStatus
+  runs: number
+  success_rate: number
+  successes: number
+  failures: number
+  findings: number
+  hitl: number
+}
+
+/** Read-only gateway/config snapshot returned alongside agent stats. */
+export interface SystemConfig {
+  llm_backend: string
+  ingestion_source: string
+  publish_mode: string
+  gateway_url: string
+  models: Record<string, string>
+}
+
+export interface AgentsResponse {
+  agents: AgentStats[]
+  config: SystemConfig
+}
+
+/** Result of POST /api/v1/ingest/analyze (on-demand "New Analysis"). */
+export interface AnalyzeResult {
+  accepted: boolean
+  duplicate: boolean
+  run_id: string
+  commit?: string
+  event?: string
+}

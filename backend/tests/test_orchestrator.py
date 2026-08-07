@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 
+from fastapi.testclient import TestClient
+
 from app.config import get_settings
 from app.domain.events import CommitRef, RepositoryInfo
 from app.domain.models import ReviewRun, RunStatus
@@ -12,7 +14,6 @@ from app.orchestration.orchestrator import ReviewOrchestrator
 from app.persistence.memory import InMemoryRunRepository
 from app.services.event_bus import EventBus
 from app.services.llm_gateway import LLMResponse
-from fastapi.testclient import TestClient
 
 from .helpers import (
     diff_clean,

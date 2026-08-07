@@ -26,14 +26,14 @@ export default function FindingList({
   if (findings.length === 0) {
     if (runStatus === 'failed') {
       return (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+        <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-6 text-center text-sm text-rose-300">
           <AlertCircle size={20} className="mx-auto mb-2" />
           Review failed — agent errors prevented findings from being collected.
         </div>
       )
     }
     return (
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-6 text-center text-sm text-emerald-800">
+      <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-6 text-center text-sm text-emerald-300">
         <CheckCircle2 size={20} className="mx-auto mb-2" />
         No issues found in this change.
       </div>
@@ -47,10 +47,7 @@ export default function FindingList({
   return (
     <ul className="space-y-3">
       {sorted.map((finding) => (
-        <li
-          key={finding.id}
-          className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
-        >
+        <li key={finding.id} className="rounded-xl border border-edge bg-panel p-4">
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${SEVERITY_STYLE[finding.severity]}`}
@@ -62,35 +59,37 @@ export default function FindingList({
               )}
               {SEVERITY_LABEL[finding.severity]}
             </span>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+            <span className="rounded-full bg-slate-700/50 px-2 py-0.5 text-[11px] font-medium text-slate-300">
               {finding.category}
             </span>
-            <span className="text-[11px] text-slate-400">{AGENT_LABEL[finding.agent]}</span>
-            <span className="ml-auto font-mono text-[11px] text-slate-500">
+            <span className="text-[11px] text-slate-500">{AGENT_LABEL[finding.agent]}</span>
+            <span className="ml-auto font-mono text-[11px] text-slate-400">
               {finding.file_path}
               {finding.line_start != null ? `:${finding.line_start}` : ''}
               {finding.requires_hitl && (
-                <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 font-sans font-medium text-amber-800">
+                <span className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 font-sans font-medium text-amber-300">
                   HITL
                 </span>
               )}
             </span>
           </div>
-          <p className="mt-2 text-sm text-slate-800">{finding.message}</p>
+          <p className="mt-2 text-sm text-slate-200">{finding.message}</p>
           {finding.suggestion && (
-            <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-900 px-3 py-2 text-xs text-emerald-300">
+            <pre className="mt-2 overflow-x-auto rounded-lg bg-[#0b0d12] px-3 py-2 text-xs text-emerald-300">
               {finding.suggestion}
             </pre>
           )}
-          <div className="mt-2 flex items-center gap-2 text-[11px] text-slate-400">
+          <div className="mt-2 flex items-center gap-2 text-[11px] text-slate-500">
             <span>Confidence</span>
-            <div className="h-1.5 w-24 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-1.5 w-24 overflow-hidden rounded-full bg-slate-700/60">
               <div
-                className="h-full rounded-full bg-indigo-500"
+                className="h-full rounded-full bg-accent"
                 style={{ width: `${Math.round(finding.confidence * 100)}%` }}
               />
             </div>
-            <span>{Math.round(finding.confidence * 100)}%</span>
+            <span className="text-slate-400">
+              {Math.round(finding.confidence * 100)}%
+            </span>
           </div>
         </li>
       ))}

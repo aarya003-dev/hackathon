@@ -31,6 +31,11 @@ def _git(repo: Path, *args: str) -> str:
     return result.stdout
 
 
+def rev_parse(repo: Path, ref: str) -> str:
+    """Resolve a git ref (``HEAD``, ``HEAD~1``, …) to its full commit SHA."""
+    return _git(repo, "rev-parse", ref).strip()
+
+
 def diff_between(repo: Path, base_sha: str, head_sha: str) -> str:
     """Unified diff between two commits. ``head_sha`` may be ``HEAD``."""
     return _git(repo, "diff", f"{base_sha}..{head_sha}", "--no-color")

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 
+from fastapi.testclient import TestClient
+
 from app.config import get_settings
 from app.domain.events import CommitRef, RepositoryInfo
 from app.domain.models import ReviewRun
@@ -16,7 +18,6 @@ from app.rag.service import RagService
 from app.rag.vector_store import InMemoryVectorStore
 from app.services.event_bus import EventBus
 from app.services.llm_gateway import LLMResponse
-from fastapi.testclient import TestClient
 
 from .helpers import diff_clean, post_event, wait_for
 

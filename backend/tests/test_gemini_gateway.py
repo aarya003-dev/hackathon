@@ -10,8 +10,9 @@ import asyncio
 from types import SimpleNamespace
 
 import pytest
-from app.services.gemini_gateway import GeminiGateway
 from google.genai import types
+
+from app.services.gemini_gateway import GeminiGateway
 
 
 class _FakeUsage:

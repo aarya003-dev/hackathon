@@ -40,15 +40,13 @@ export default function HitlPanel({
   }
 
   return (
-    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 shadow-sm">
-      <div className="flex items-center gap-2 text-amber-900">
+    <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4">
+      <div className="flex items-center gap-2 text-amber-200">
         <ShieldAlert size={18} />
         <h3 className="text-sm font-semibold">Human review required</h3>
-        <span className="ml-auto text-xs text-amber-700">
-          {pending.length} pending
-        </span>
+        <span className="ml-auto text-xs text-amber-300">{pending.length} pending</span>
       </div>
-      <p className="mt-1 text-xs text-amber-800">
+      <p className="mt-1 text-xs text-amber-300/80">
         The security agent paused this review. Review the evidence below and decide
         explicitly; the run resumes automatically.
       </p>
@@ -58,27 +56,24 @@ export default function HitlPanel({
           const finding = findingById.get(approval.finding_id)
           if (!finding) return null
           return (
-            <div
-              key={approval.id}
-              className="rounded-lg border border-amber-200 bg-white p-3"
-            >
+            <div key={approval.id} className="rounded-lg border border-edge bg-panel p-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={`rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${SEVERITY_STYLE[finding.severity]}`}
                 >
                   {finding.severity}
                 </span>
-                <span className="font-mono text-[11px] text-slate-500">
+                <span className="font-mono text-[11px] text-slate-400">
                   {finding.file_path}
                   {finding.line_start != null ? `:${finding.line_start}` : ''}
                 </span>
-                <span className="ml-auto text-[11px] text-slate-400">
+                <span className="ml-auto text-[11px] text-slate-500">
                   requested {formatTime(approval.requested_at)}
                 </span>
               </div>
-              <p className="mt-2 text-sm text-slate-800">{finding.message}</p>
+              <p className="mt-2 text-sm text-slate-200">{finding.message}</p>
               {finding.suggestion && (
-                <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-900 px-3 py-2 text-xs text-emerald-300">
+                <pre className="mt-2 overflow-x-auto rounded-lg bg-[#0b0d12] px-3 py-2 text-xs text-emerald-300">
                   {finding.suggestion}
                 </pre>
               )}
@@ -87,23 +82,23 @@ export default function HitlPanel({
                   type="button"
                   disabled={busy === approval.id}
                   onClick={() => decide(approval, 'approve')}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-50"
                 >
                   {busy === approval.id ? (
                     <Loader2 size={13} className="animate-spin" />
                   ) : (
                     <Check size={13} />
                   )}
-                  Approve
+                  Override &amp; Approve
                 </button>
                 <button
                   type="button"
                   disabled={busy === approval.id}
                   onClick={() => decide(approval, 'reject')}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-500 disabled:opacity-50"
                 >
                   <X size={13} />
-                  Reject
+                  Reject Fix
                 </button>
               </div>
             </div>
@@ -111,8 +106,8 @@ export default function HitlPanel({
         })}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-        <label htmlFor="reviewer" className="font-medium">
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+        <label htmlFor="reviewer" className="font-medium text-slate-300">
           Reviewer
         </label>
         <input
@@ -121,9 +116,9 @@ export default function HitlPanel({
           value={reviewer}
           onChange={(event) => onReviewerChange(event.target.value)}
           placeholder="your name"
-          className="rounded-md border border-slate-300 px-2 py-1 text-xs outline-none focus:border-amber-500"
+          className="rounded-md border border-edge bg-panel px-2 py-1 text-xs text-slate-200 outline-none placeholder:text-slate-600 focus:border-accent/60"
         />
-        {error && <span className="text-rose-600">{error}</span>}
+        {error && <span className="text-rose-400">{error}</span>}
       </div>
     </div>
   )

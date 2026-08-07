@@ -1,13 +1,61 @@
 @import "tailwindcss";
 
+@theme {
+  --color-surface: #07080c;
+  --color-panel: #0f1116;
+  --color-panel-2: #151924;
+  --color-edge: #1f2430;
+  --color-edge-bright: #2c3345;
+  --color-accent: #22d3ee;
+  --color-accent-soft: #143b46;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-surface text-slate-200 antialiased;
+  background-image:
+    radial-gradient(1100px 560px at 82% -10%, rgba(34, 211, 238, 0.07), transparent 60%),
+    radial-gradient(900px 480px at -12% 8%, rgba(99, 102, 241, 0.06), transparent 55%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.3);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #232833;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2f3645;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Cyan glow for active navigation / emphasis elements. */
+.glow-accent {
+  box-shadow:
+    0 0 0 1px rgba(34, 211, 238, 0.45),
+    0 0 20px rgba(34, 211, 238, 0.16);
 }
 
 /* React Flow fills its parent; the parent supplies the height. */
@@ -19,7 +67,33 @@ body {
   font-family: inherit;
 }
 
+/* React Flow ships its own styles; plain CSS + !important wins the cascade. */
+.react-flow__controls {
+  overflow: hidden !important;
+  border: 1px solid #1f2430 !important;
+  border-radius: 0.5rem !important;
+}
+.react-flow__controls button {
+  background: #0f1116 !important;
+  border-color: #1f2430 !important;
+  color: #cbd5e1 !important;
+}
+.react-flow__controls button:hover {
+  background: #151924 !important;
+}
+.react-flow__controls button:last-child {
+  border-bottom: none !important;
+}
+.react-flow__controls svg {
+  fill: currentColor;
+}
+
+.react-flow__edge-path {
+  stroke: #334155;
+}
+
 /* Subtle scrollbars for the diff viewer. */
 .diff-scroll {
   scrollbar-width: thin;
+  scrollbar-color: #2a3040 transparent;
 }

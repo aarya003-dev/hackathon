@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.routes import hitl, ingest, runs
+from .api.routes import agents, hitl, ingest, runs
 from .api.routes import rag as rag_router
 from .config import get_settings
 from .integrations.publisher import create_publisher
@@ -64,11 +64,13 @@ def create_app() -> FastAPI:
     app.state.gateway = gateway
     app.state.rag = rag
     app.state.orchestrator = orchestrator
+    app.state.settings = settings
 
     app.include_router(ingest.router)
     app.include_router(runs.router)
     app.include_router(hitl.router)
     app.include_router(rag_router.router)
+    app.include_router(agents.router)
 
     @app.get("/health")
     async def health() -> dict:
