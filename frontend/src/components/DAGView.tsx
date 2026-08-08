@@ -17,23 +17,27 @@ const AGENT_LABEL: Record<AgentId, string> = {
   triage: 'Triage',
   core_review: 'Core review',
   security: 'Security',
+  suggestion: 'Suggestion',
   summarizer: 'Summarizer',
 }
 
-const AGENT_ORDER: AgentId[] = ['triage', 'core_review', 'security', 'summarizer']
+const AGENT_ORDER: AgentId[] = ['triage', 'core_review', 'security', 'suggestion', 'summarizer']
 
 const POSITIONS: Record<AgentId, { x: number; y: number }> = {
   triage: { x: 0, y: 130 },
   core_review: { x: 280, y: 0 },
-  security: { x: 280, y: 260 },
+  security: { x: 280, y: 130 },
+  suggestion: { x: 280, y: 260 },
   summarizer: { x: 560, y: 130 },
 }
 
 const EDGES: Edge[] = [
   { id: 'e-triage-core', source: 'triage', target: 'core_review' },
   { id: 'e-triage-security', source: 'triage', target: 'security' },
+  { id: 'e-triage-suggestion', source: 'triage', target: 'suggestion' },
   { id: 'e-core-summary', source: 'core_review', target: 'summarizer' },
   { id: 'e-security-summary', source: 'security', target: 'summarizer' },
+  { id: 'e-suggestion-summary', source: 'suggestion', target: 'summarizer' },
 ]
 
 export interface AgentNodeData extends Record<string, unknown> {

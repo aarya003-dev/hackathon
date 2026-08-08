@@ -24,6 +24,7 @@ def test_list_and_detail(client: TestClient) -> None:
         "triage",
         "core_review",
         "security",
+        "suggestion",
         "summarizer",
     }
 
@@ -43,7 +44,7 @@ def test_sse_stream_replays_completed_run(client: TestClient) -> None:
     assert "event: run.queued" in body
     assert "event: run.started" in body
     assert "event: review.completed" in body
-    assert body.count("event: agent.started") == 4
+    assert body.count("event: agent.started") == 5
 
 
 def test_hitl_decision_validation(client: TestClient) -> None:

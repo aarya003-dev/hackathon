@@ -16,6 +16,7 @@ from uuid import uuid4
 from ..agents.base import AgentContext
 from ..agents.core_review import CoreReviewAgent
 from ..agents.security import SecurityAgent
+from ..agents.suggestion import SuggestionAgent
 from ..agents.summarizer import SummarizerAgent
 from ..agents.triage import TriageAgent
 from ..config import Settings
@@ -65,6 +66,7 @@ class ReviewOrchestrator:
         self.triage = TriageAgent()
         self.core = CoreReviewAgent()
         self.security = SecurityAgent()
+        self.suggestion = SuggestionAgent()
         self.summarizer = SummarizerAgent()
         self._tasks: set[asyncio.Task] = set()
 
@@ -89,23 +91,29 @@ class ReviewOrchestrator:
 
             core_files = routing.get("core") or run.commit.files
             security_files = routing.get("security") or run.commit.files
+            suggestion_files = routing.get("suggestion") or run.commit.files
 
             # 1b. Retrieve relevant guidance for the specialized agents.
             rag_context = self._retrieve_rag_context(run)
 
-            # 2. Core review and security run in parallel.
+            # 2. Core review, security, and suggestion agents run in parallel.
             #    return_exceptions=True so a failure in one agent does not
             #    cancel the other — partial results are still useful.
             self._node(run, AgentKind.core, NodeStatus.running)
             self._node(run, AgentKind.security, NodeStatus.running)
-            core_result, security_result = await asyncio.gather(
+            self._node(run, AgentKind.suggestion, NodeStatus.running)
+            core_result, security_result, suggestion_result = await asyncio.gather(
                 self.core.run(self._ctx(run), core_files, rag_context),
                 self.security.run(self._ctx(run), security_files, rag_context),
+                self.suggestion.run(self._ctx(run), suggestion_files, rag_context),
                 return_exceptions=True,
             )
             core_findings = core_result if isinstance(core_result, list) else []
             security_findings = (
                 security_result if isinstance(security_result, list) else []
+            )
+            suggestion_findings = (
+                suggestion_result if isinstance(suggestion_result, list) else []
             )
             errors: list[str] = []
             if isinstance(core_result, BaseException):
@@ -118,9 +126,14 @@ class ReviewOrchestrator:
                 self._node(run, AgentKind.security, NodeStatus.failed)
             else:
                 self._node(run, AgentKind.security, NodeStatus.success)
+            if isinstance(suggestion_result, BaseException):
+                errors.append(f"suggestion: {suggestion_result}")
+                self._node(run, AgentKind.suggestion, NodeStatus.failed)
+            else:
+                self._node(run, AgentKind.suggestion, NodeStatus.success)
             if errors:
                 run.error = "; ".join(errors)
-            run.findings = core_findings + security_findings
+            run.findings = core_findings + security_findings + suggestion_findings
 
             # 3. HITL gate: pause if any finding needs a human decision.
             pending = [finding for finding in run.findings if finding.requires_hitl]

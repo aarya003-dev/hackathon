@@ -17,7 +17,7 @@ export type Severity = 'info' | 'warning' | 'error' | 'critical'
 
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected'
 
-export type AgentId = 'triage' | 'core_review' | 'security' | 'summarizer'
+export type AgentId = 'triage' | 'core_review' | 'security' | 'suggestion' | 'summarizer'
 
 export interface RepositoryInfo {
   name: string

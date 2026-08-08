@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     model_triage: str = "azure/genailab-maas-gpt-4o-mini"
     model_core_review: str = "genailab-maas-gpt-5.3-codex"
     model_security: str = "azure_ai/genailab-maas-DeepSeek-R1"
+    model_suggestion: str = "azure/genailab-maas-gpt-4o-mini"
     model_summarizer: str = "gemini-2.5-pro"
     model_embeddings: str = "azure/genailab-maas-text-embedding-3-large"
 

@@ -23,6 +23,7 @@ class AgentKind(str, Enum):
     triage = "triage"
     core = "core_review"
     security = "security"
+    suggestion = "suggestion"
     summarizer = "summarizer"
 
 

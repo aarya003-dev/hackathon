@@ -117,12 +117,16 @@ def _files_from_diff(diff: str) -> list[str]:
 
 def _detect(model: str) -> str:
     lowered = model.lower()
-    if "gpt-4o" in lowered or "triage" in lowered:
+    if "triage" in lowered:
         return "triage"
     if "gemini" in lowered or "summar" in lowered:
         return "summarizer"
     if "deepseek" in lowered or "security" in lowered:
         return "security"
+    if "suggest" in lowered:
+        return "suggestion"
+    if "gpt-4o" in lowered:
+        return "triage"
     return "core"
 
 
@@ -169,6 +173,20 @@ def _security_findings(diff: str, files: list[str]) -> list[dict]:
     return findings
 
 
+def _suggestion_findings(diff: str, files: list[str]) -> list[dict]:
+    path = files[0] if files else "unknown"
+    return [
+        {
+            "severity": "info",
+            "category": "best_practices",
+            "file_path": path,
+            "message": "Consider adding explicit type hints and modular dependency injection for improved maintainability and scalability.",
+            "suggestion": "Use Pydantic schemas for data validation and modular FastAPI APIRouter instances.",
+            "confidence": 0.9,
+        }
+    ]
+
+
 class DemoGateway:
     """Mimics ``LLMGateway.chat`` with rule-based, deterministic responses."""
 
@@ -198,7 +216,7 @@ class DemoGateway:
 
     def _respond(self, kind: str, diff: str, files: list[str]) -> dict:
         if kind == "triage":
-            return {"core": files, "security": files}
+            return {"core": files, "security": files, "suggestion": files}
         if kind == "summarizer":
             security_count = len(_security_findings(diff, files))
             return {
@@ -209,4 +227,6 @@ class DemoGateway:
             }
         if kind == "security":
             return {"findings": _security_findings(diff, files)}
+        if kind == "suggestion":
+            return {"findings": _suggestion_findings(diff, files)}
         return {"findings": _core_findings(diff, files)}

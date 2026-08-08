@@ -13,6 +13,7 @@ const AGENT_LABEL: Record<Finding['agent'], string> = {
   triage: 'Triage',
   core_review: 'Core review',
   security: 'Security',
+  suggestion: 'Suggestion',
   summarizer: 'Summarizer',
 }
 
