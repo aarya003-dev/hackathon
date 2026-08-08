@@ -6,8 +6,7 @@ import re
 from dataclasses import dataclass
 
 from ..config import Settings
-from ..domain.models import AgentKind, ReviewRun
-from ..services.llm_gateway import LLMGateway
+from ..domain.models import AgentKind, ReviewRun, Severity
 
 # LLMs frequently return descriptive strings for numeric fields like
 # confidence.  Map common natural-language descriptors to floats so the
@@ -19,6 +18,17 @@ _CONFIDENCE_MAP: dict[str, float] = {
     "low": 0.5,
     "very low": 0.3,
     "none": 0.0,
+}
+
+_SEVERITY_MAP: dict[str, Severity] = {
+    "info": Severity.info,
+    "low": Severity.info,
+    "warning": Severity.warning,
+    "medium": Severity.warning,
+    "error": Severity.error,
+    "high": Severity.error,
+    "critical": Severity.critical,
+    "very high": Severity.critical,
 }
 
 
@@ -43,6 +53,17 @@ def coerce_confidence(raw: object, default: float = 1.0) -> float:
         except (ValueError, OverflowError):
             pass
     return default
+
+
+def coerce_severity(raw: object, default: Severity = Severity.warning) -> Severity:
+    """Safely convert raw severity values (e.g. 'high', 'medium', 'error') to a Severity enum."""
+    text = str(raw).strip().lower()
+    if text in _SEVERITY_MAP:
+        return _SEVERITY_MAP[text]
+    try:
+        return Severity(text)
+    except ValueError:
+        return default
 
 
 @dataclass

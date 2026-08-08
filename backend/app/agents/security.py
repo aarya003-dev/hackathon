@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from ..domain.models import AgentKind, Finding, Severity
 from ..orchestration.prompts import build_security_messages
-from .base import AgentContext, BaseAgent, coerce_confidence
+from .base import AgentContext, BaseAgent, coerce_confidence, coerce_severity
 
 _HITL_CONFIDENCE = 0.8
 
@@ -31,7 +31,7 @@ class SecurityAgent(BaseAgent):
         data = response.parsed()
         findings: list[Finding] = []
         for raw in data.get("findings", []):
-            severity = Severity(raw.get("severity", "warning"))
+            severity = coerce_severity(raw.get("severity", "warning"))
             confidence = coerce_confidence(raw.get("confidence", 1.0))
             requires_hitl = severity == Severity.critical or (
                 severity in (Severity.error, Severity.critical)
@@ -43,7 +43,7 @@ class SecurityAgent(BaseAgent):
                     agent=AgentKind.security,
                     severity=severity,
                     category=raw.get("category", "security"),
-                    file_path=raw.get("file_path", ""),
+                    file_path=raw.get("file_path") or raw.get("file") or raw.get("path") or "",
                     line_start=raw.get("line_start"),
                     line_end=raw.get("line_end"),
                     message=raw.get("message", ""),

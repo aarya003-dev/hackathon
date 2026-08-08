@@ -21,22 +21,22 @@ from pydantic import BaseModel
 from ..config import Settings
 
 
-def _strip_json_fences(text: str) -> str:
-    """Remove a ```json ... ``` code fence around a JSON payload, if present.
+import re
 
-    Some providers (Gemini in particular) may wrap JSON responses in markdown
-    fences even when ``response_mime_type`` is set; stripping here keeps every
-    backend's content ready for :meth:`LLMResponse.parsed`.
-    """
+def _strip_json_fences(text: str) -> str:
+    """Remove reasoning tags (<think>...</think>) and code fences around JSON payloads."""
     stripped = text.strip()
-    if not stripped.startswith("```"):
-        return text
-    lines = stripped.splitlines()
-    if lines and lines[0].startswith("```"):
-        lines = lines[1:]
-    if lines and lines[-1].strip() == "```":
-        lines = lines[:-1]
-    return "\n".join(lines).strip()
+    # Remove <think>...</think> tags if present (e.g. DeepSeek-R1)
+    stripped = re.sub(r"<think>.*?</think>", "", stripped, flags=re.DOTALL).strip()
+    # Extract ```json ... ``` content if present
+    match = re.search(r"```(?:json)?\s*(\{.*?\}|\[.*?\])\s*```", stripped, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    # Fallback to finding JSON object or array
+    match = re.search(r"(\{.*\}|\[.*\])", stripped, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return stripped
 
 
 class LLMResponse(BaseModel):
@@ -73,7 +73,7 @@ class HttpLLMGateway:
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
-        self._client = httpx.AsyncClient(timeout=timeout)
+        self._client = httpx.AsyncClient(timeout=timeout, verify=False)
         self._max_retries = max_retries
 
     async def chat(
@@ -84,7 +84,9 @@ class HttpLLMGateway:
         temperature: float = 0.2,
     ) -> LLMResponse:
         url = f"{self._base_url}/v1/chat/completions"
-        payload = {"model": model, "messages": messages, "temperature": temperature}
+        payload = {"model": model, "messages": messages}
+        if "gpt-5" not in model:
+            payload["temperature"] = temperature
         headers = {"Authorization": f"Bearer {self._api_key}"} if self._api_key else {}
 
         last_error: Exception | None = None
@@ -109,6 +111,11 @@ class HttpLLMGateway:
                     tokens_in=int(usage.get("prompt_tokens", 0)),
                     tokens_out=int(usage.get("completion_tokens", 0)),
                 )
+            except httpx.HTTPStatusError as exc:
+                last_error = RuntimeError(f"HTTP {exc.response.status_code}: {exc.response.text}")
+                if attempt < self._max_retries:
+                    await asyncio.sleep(2**attempt)
+                    continue
             except httpx.HTTPError as exc:
                 last_error = exc
                 if attempt < self._max_retries:

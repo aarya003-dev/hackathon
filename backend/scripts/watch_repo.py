@@ -58,7 +58,9 @@ def _post(url: str, secret: str, body: bytes) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--repo", required=True, help="Path to the local git repo to watch"
+        "--repo",
+        default=os.getenv("GIT_REPO_PATH"),
+        help="Path to the local git repo to watch (defaults to GIT_REPO_PATH env var)",
     )
     parser.add_argument(
         "--url",
@@ -66,10 +68,14 @@ def main() -> int:
     )
     parser.add_argument("--secret", default=os.getenv("INGEST_SECRET", "dev-secret"))
     parser.add_argument(
-        "--interval", type=int, default=int(os.getenv("GIT_POLL_SECONDS", "10"))
+        "--interval", type=int, default=int(os.getenv("GIT_POLL_SECONDS", "3"))
     )
     parser.add_argument("--state", default=".review-state")
     args = parser.parse_args()
+
+    if not args.repo:
+        print("[watch] Error: --repo path or GIT_REPO_PATH env var must be specified.", file=sys.stderr)
+        return 1
 
     repo = Path(args.repo).resolve()
     state_file = repo / args.state

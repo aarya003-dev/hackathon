@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from ..domain.models import AgentKind, Finding, Severity
 from ..orchestration.prompts import build_core_messages
-from .base import AgentContext, BaseAgent, coerce_confidence
+from .base import AgentContext, BaseAgent, coerce_confidence, coerce_severity
 
 
 class CoreReviewAgent(BaseAgent):
@@ -29,9 +29,9 @@ class CoreReviewAgent(BaseAgent):
                 Finding(
                     id=uuid4().hex,
                     agent=AgentKind.core,
-                    severity=Severity(raw.get("severity", "warning")),
+                    severity=coerce_severity(raw.get("severity", "warning")),
                     category=raw.get("category", "style"),
-                    file_path=raw.get("file_path", ""),
+                    file_path=raw.get("file_path") or raw.get("file") or raw.get("path") or "",
                     line_start=raw.get("line_start"),
                     line_end=raw.get("line_end"),
                     message=raw.get("message", ""),
